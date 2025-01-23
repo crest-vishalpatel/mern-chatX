@@ -76,6 +76,12 @@ io.on("connection", (socket) => {
     Message.findByIdAndUpdate(message._id, { status: "read" });
   });
 
+  socket.on("mark_as_read", (data) => {
+    io.to(userSocketMap[data.userId]).emit("mark_as_read", {
+      conversationId: data._id,
+    });
+  });
+
   socket.on(
     "create_conversation",
     ({

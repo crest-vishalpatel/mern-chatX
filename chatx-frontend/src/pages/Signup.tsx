@@ -8,7 +8,7 @@ import { useChat } from "@/contexts/ChatContext";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const { dispatch } = useChat();
+  const { socket, setUserId } = useChat();
   const {
     register,
     watch,
@@ -20,7 +20,8 @@ const Signup: React.FC = () => {
     try {
       const result = await signup(data);
       if (result) {
-        dispatch({ type: "login", payload: { userId: result.userId } });
+        setUserId(result.userId);
+        socket?.connect();
         navigate("/");
       }
     } catch (error) {

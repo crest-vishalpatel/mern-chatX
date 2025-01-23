@@ -3,9 +3,7 @@ import Chat from "@/ui/Chat";
 import React from "react";
 
 const ChatList: React.FC = () => {
-  const {
-    state: { chats },
-  } = useChat();
+  const { chats } = useChat();
 
   return (
     <ul>

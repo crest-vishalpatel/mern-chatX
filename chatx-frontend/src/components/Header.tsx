@@ -1,5 +1,10 @@
 import * as React from "react";
-import { HiEllipsisVertical, HiChatBubbleLeft, HiMoon } from "react-icons/hi2";
+import {
+  HiEllipsisVertical,
+  HiChatBubbleLeft,
+  HiMoon,
+  HiOutlineSun,
+} from "react-icons/hi2";
 import {
   Dialog,
   DialogContent,
@@ -35,9 +40,11 @@ import { useNavigate } from "react-router";
 import { Checkbox } from "./ui/checkbox";
 import MultiSelect from "./Multiselect";
 import { Input } from "./ui/input";
+import { useTheme } from "@/contexts/theme-provider";
 
 const Header: React.FC = () => {
-  const { dispatch, socket } = useChat();
+  const { setTheme, theme } = useTheme();
+  const { socket, setUserId, setSelectedChat, setChats } = useChat();
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -69,10 +76,11 @@ const Header: React.FC = () => {
         receiverId: selectedUsers,
         conversationId: result._id,
       });
-      dispatch({
-        type: "NEW_CHAT",
-        payload: { chat: { ...result, userDetails: result.participants } },
-      });
+      setChats((prev) => [
+        { ...result, userDetails: result.participants },
+        ...prev,
+      ]);
+      setSelectedChat({ ...result, userDetails: result.participants });
       navigate(`/chats/${result._id}`);
     } catch (error) {
       toast.error("Something went wrong");
@@ -84,7 +92,7 @@ const Header: React.FC = () => {
     try {
       await logout();
       socket?.disconnect();
-      dispatch({ type: "LOGOUT" });
+      setUserId(undefined);
       navigate("/login");
     } catch (error) {
       toast.error("Something went wrong");
@@ -109,8 +117,15 @@ const Header: React.FC = () => {
         className="block h-12 w-12 cursor-pointer rounded-full"
       />
       <div className="flex items-center justify-end gap-1">
-        <Button variant="ghost">
-          <HiMoon size={20} />
+        <Button
+          variant="ghost"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        >
+          {theme === "light" ? (
+            <HiMoon size={20} />
+          ) : (
+            <HiOutlineSun size={20} />
+          )}
         </Button>
         <Button variant="ghost" onClick={() => setIsOpen(true)}>
           <HiChatBubbleLeft size={20} />

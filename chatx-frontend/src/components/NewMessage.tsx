@@ -6,7 +6,7 @@ import { useChat } from "@/contexts/ChatContext";
 import { useParams } from "react-router";
 
 const NewMessage: React.FC = () => {
-  const { socket, dispatch, addMessage } = useChat();
+  const { socket, setChats, addMessage } = useChat();
   const { chatId } = useParams();
 
   const [newMessage, setNewMessage] = useState<string>("");
@@ -28,7 +28,21 @@ const NewMessage: React.FC = () => {
         conversationId: chatId!,
       });
       setNewMessage("");
-      dispatch({ type: "newMessage", payload: { message: message } });
+      setChats((chats) =>
+        chats.map((chat) => {
+          if (chat._id === chatId) {
+            return {
+              ...chat,
+              lastMessage: {
+                text: message.text,
+                updatedAt: message.createdAt,
+                _id: message._id,
+              },
+            };
+          }
+          return chat;
+        }),
+      );
       socket?.emit("send_message", message);
       addMessage(message);
     } catch (error) {
@@ -37,7 +51,7 @@ const NewMessage: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-2 bg-neutral-50 px-2 py-2">
+    <div className="flex gap-2 px-2 py-2">
       {/* <div>Attachment</div> */}
       <div className="flex-1">
         <input

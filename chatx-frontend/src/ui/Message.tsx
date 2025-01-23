@@ -26,8 +26,8 @@ const Message: React.FC<Props> = ({
   return (
     <div
       className={clsx(
-        "relative mb-3 flex w-fit max-w-[95%] whitespace-pre-line rounded-full pb-[8px] pl-[9px] pr-[7px] pt-[6px] text-sm leading-5",
-        isSender ? "self-end bg-gray-100" : "self-start bg-lime-200",
+        "relative mb-3 flex w-fit max-w-[95%] whitespace-pre-line rounded-full border pb-[8px] pl-[9px] pr-[7px] pt-[6px] text-sm leading-5",
+        isSender ? "self-end" : "self-start",
       )}
     >
       <span>{text}</span>

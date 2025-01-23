@@ -9,7 +9,7 @@ type Props = {
   _id: string;
   conversationName: string;
   isGroup: boolean;
-  userDetails: Array<{ firstName: string; lastName: string }>;
+  userDetails: Array<{ firstName: string; lastName: string; _id: string }>;
   lastMessage: { _id: string; text: string; updatedAt: string };
   unreadCounts: Array<{
     userId: string;
@@ -28,30 +28,37 @@ const Chat: React.FC<Props> = ({
 }: Props) => {
   const navigate = useNavigate();
 
-  const { dispatch } = useChat();
+  const { socket, setSelectedChat, setChats } = useChat();
 
-  const { firstName, lastName } = userDetails[0];
+  const { firstName, lastName, _id: userId } = userDetails[0];
 
   const handleClick = async () => {
     try {
-      const result = await markAsRead(_id);
-      console.log(result);
+      socket?.emit("mark_as_read", { userId, _id });
+      await markAsRead(_id);
     } catch (error) {
       toast.error("Something went wrong");
     }
-    dispatch({
-      type: "setSelectedChat",
-      payload: {
-        chat: {
-          _id: _id,
-          lastMessage: { text: "", updatedAt: "", _id: "" },
-          userDetails: [{ firstName, lastName, _id: "" }],
-          conversationName,
-          isGroup,
-          unreadCounts,
-        },
-      },
+    setSelectedChat({
+      _id: _id,
+      lastMessage: { text: "", updatedAt: "", _id: "" },
+      userDetails: [{ firstName, lastName, _id: "" }],
+      conversationName,
+      isGroup,
+      unreadCounts,
     });
+    setChats((prevChats) =>
+      prevChats.map((chat) => {
+        if (chat._id === _id) {
+          return {
+            ...chat,
+            unreadCounts: [{ ...chat.unreadCounts[0], count: 0 }],
+          };
+        } else {
+          return chat;
+        }
+      }),
+    );
     navigate(`/chats/${_id}`);
   };
 

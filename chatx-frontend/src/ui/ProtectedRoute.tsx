@@ -9,21 +9,18 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const {
-    dispatch,
-    state: { isLoggedIn },
-  } = useChat();
+  const { userId, setUserId } = useChat();
   const navigate = useNavigate();
 
   const authorize = async () => {
     try {
       const result = await verifyToken();
       if (result) {
-        dispatch({ type: "LOGIN", payload: { userId: result.userId } });
+        setUserId(result.userId);
       }
     } catch (error) {
       toast.error("Something went wrong");
-      if (!isLoggedIn) navigate("/login");
+      if (!userId) navigate("/login");
     }
   };
 
@@ -31,7 +28,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     authorize();
   }, []);
 
-  if (isLoggedIn) {
+  if (userId) {
     return children;
   }
 };

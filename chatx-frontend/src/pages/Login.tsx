@@ -8,7 +8,7 @@ import { useChat } from "@/contexts/ChatContext";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { socket, dispatch } = useChat();
+  const { socket, setUserId } = useChat();
 
   const {
     register,
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
       const result = await signin(data);
       if (result) {
         socket?.connect();
-        dispatch({ type: "LOGIN", payload: { userId: result.userId } });
+        setUserId(result.userId);
         navigate("/");
       }
     } catch (error) {

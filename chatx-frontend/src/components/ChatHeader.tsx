@@ -7,9 +7,7 @@ import { useNavigate } from "react-router";
 const ChatHeader: React.FC = () => {
   const navigate = useNavigate();
 
-  const {
-    state: { selectedChat },
-  } = useChat();
+  const { selectedChat } = useChat();
 
   useEffect(() => {
     if (!selectedChat?._id) navigate("/chats");
