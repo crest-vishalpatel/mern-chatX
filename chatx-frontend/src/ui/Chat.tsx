@@ -42,7 +42,7 @@ const Chat: React.FC<Props> = ({
     setSelectedChat({
       _id: _id,
       lastMessage: { text: "", updatedAt: "", _id: "" },
-      userDetails: [{ firstName, lastName, _id: "" }],
+      userDetails: [{ firstName, lastName, _id: userId }],
       conversationName,
       isGroup,
       unreadCounts,

@@ -95,3 +95,13 @@ export const getAllUsers = async () => {
   });
   return response.data;
 };
+
+export const getUserStatus = async (userId: string) => {
+  const response = await axiosInstance.get(
+    `/api/users/status?userId=${userId}`,
+    {
+      withCredentials: true,
+    },
+  );
+  return response.data;
+};

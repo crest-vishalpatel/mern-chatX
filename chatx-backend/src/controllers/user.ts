@@ -48,6 +48,7 @@ const login = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Invalid credentials" });
       return;
     }
+    await User.findOneAndUpdate({ email }, { status: "online" });
     const auth_token = user.generateAuthToken();
     res
       .status(200)
@@ -104,8 +105,14 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-const logout = (req: Request, res: Response) => {
-  res.cookie("auth_token", "", { expires: new Date(0) }).send();
+const logout = async (req: Request, res: Response) => {
+  try {
+    await User.findByIdAndUpdate(req.userId, { status: "offline" });
+    res.cookie("auth_token", "", { expires: new Date(0) }).send();
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 };
 
 const getAllUsers = async (req: Request, res: Response) => {
@@ -121,4 +128,14 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export { register, login, getUsers, logout, getAllUsers };
+const getStatus = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.query.userId as string);
+    res.status(200).json({ user });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+export { register, login, getUsers, logout, getAllUsers, getStatus };

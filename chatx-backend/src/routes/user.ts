@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import {
   getAllUsers,
+  getStatus,
   getUsers,
   login,
   logout,
@@ -17,6 +18,7 @@ router.get("/verify", verifyToken, (req: Request, res: Response) => {
 });
 router.get("/", verifyToken, getUsers);
 router.get("/all", verifyToken, getAllUsers);
-router.post("/logout", logout);
+router.post("/logout", verifyToken, logout);
+router.get("/status", verifyToken, getStatus);
 
 export default router;

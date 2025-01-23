@@ -34,6 +34,7 @@ io.on("connection", (socket) => {
   socket.on("register_user", async (userId: string) => {
     userSocketMap[userId] = socket.id;
     logger.info(`User ${userId} mapped to socket ${socket.id}`);
+    socket.broadcast.emit("user_status_change", { userId, status: "online" });
     const conversations = await Conversation.find({
       participants: userId,
     })
@@ -106,6 +107,10 @@ io.on("connection", (socket) => {
     if (userId) {
       delete userSocketMap[userId];
       logger.info(`User ${userId} disconnected and removed from map`);
+      socket.broadcast.emit("user_status_change", {
+        userId,
+        status: "offline",
+      });
     }
   });
 });
